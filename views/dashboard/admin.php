@@ -75,10 +75,13 @@ require_once __DIR__ . '/../layouts/sidebar.php';
                                     <i class="fas fa-ban"></i>
                                 </a>
                             <?php else: ?>
-                                <a href="../../controllers/AdminUsuarioController.php?accion=toggleEstado&id=<?= $u['id_usuario'] ?>&estado=0" class="px-3 py-1 rounded border text-green-600 border-green-300 hover:bg-green-50" title="Activar" onclick="return confirm('¿Seguro que desea activar este usuario?');">
+                                <a href="../../controllers/AdminUsuarioController.php?accion=toggleEstado&id=<?= $ruben['id_usuario'] ?>&estado=0" class="px-3 py-1 rounded border text-green-600 border-green-300 hover:bg-green-50" title="Activar" onclick="return confirm('¿Seguro que desea activar este usuario?');">
                                     <i class="fas fa-check"></i>
                                 </a>
                             <?php endif; ?>
+                            <a href="../../controllers/AdminUsuarioController.php?accion=eliminar&id=<?= $ruben['id_usuario'] ?>" class="px-3 py-1 rounded border text-red-600 border-red-300 hover:bg-red-50" title="Eliminar" onclick="return confirm('¿Seguro que desea eliminar permanentemente este usuario?');">
+                                <i class="fas fa-trash"></i>
+                            </a>
                         </td>
                     </tr>
                     <?php endforeach; ?>

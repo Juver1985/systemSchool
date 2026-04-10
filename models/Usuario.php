@@ -136,5 +136,17 @@ class Usuario {
             return "Error al cambiar estado: " . $e->getMessage();
         }
     }
+
+    public function eliminar($id_usuario) {
+        try {
+            $sql = "DELETE FROM " . $this->tabla . " WHERE id_usuario = :id_usuario";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bindParam(":id_usuario", $id_usuario, PDO::PARAM_INT);
+            $stmt->execute();
+            return true;
+        } catch (Exception $e) {
+            return "Error al eliminar: " . $e->getMessage();
+        }
+    }
 }
 ?>

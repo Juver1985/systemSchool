@@ -124,6 +124,25 @@ class AdminUsuarioController {
         exit;
     }
 
+    public function eliminar() {
+        $id_usuario = $_GET['id'] ?? null;
+
+        if ($id_usuario !== null) {
+            $resultado = $this->usuarioModel->eliminar($id_usuario);
+
+            if ($resultado === true) {
+                $this->setAlert('success', 'Éxito', 'Usuario eliminado correctamente');
+            } else {
+                $this->setAlert('error', 'Error', $resultado);
+            }
+        } else {
+            $this->setAlert('error', 'Error', 'ID de usuario no proporcionado');
+        }
+
+        header("Location: ../views/dashboard/admin.php");
+        exit;
+    }
+
     private function setAlert($icon, $title, $text) {
         $_SESSION['alert'] = [
             'icon' => $icon,
@@ -145,6 +164,9 @@ switch ($accion) {
         break;
     case 'toggleEstado':
         $controller->toggleEstado();
+        break;
+    case 'eliminar':
+        $controller->eliminar();
         break;
     default:
         header("Location: ../views/dashboard/admin.php");
