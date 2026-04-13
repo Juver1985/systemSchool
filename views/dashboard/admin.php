@@ -43,7 +43,7 @@ require_once __DIR__ . '/../layouts/sidebar.php';
         <?php endif; ?>
 
         <div class="overflow-x-auto">
-            <table class="w-full text-left border border-slate-200 rounded-xl overflow-hidden">
+            <table id="usuariosTable" class="w-full text-left border border-slate-200 rounded-xl overflow-hidden">
                 <thead class="bg-slate-100 text-slate-700">
                     <tr>
                         <th class="p-4">Nombre Completo</th>
@@ -71,15 +71,15 @@ require_once __DIR__ . '/../layouts/sidebar.php';
                                 <i class="fas fa-pen"></i>
                             </button>
                             <?php if ($ruben['activo'] == 1): ?>
-                                <a href="../../controllers/AdminUsuarioController.php?accion=toggleEstado&id=<?= $ruben['id_usuario'] ?>&estado=1" class="px-3 py-1 rounded border text-red-600 border-red-300 hover:bg-red-50" title="Desactivar" onclick="return confirm('¿Seguro que desea desactivar este usuario?');">
+                                <a href="../../controllers/AdminUsuarioController.php?accion=toggleEstado&id=<?= $ruben['id_usuario'] ?>&estado=1" class="px-3 py-1 rounded border text-red-600 border-red-300 hover:bg-red-50" title="Desactivar" onclick="confirmarAccion(event, this.href, '¿Desactivar usuario?', '¿Seguro que desea desactivar este usuario?', 'warning')">
                                     <i class="fas fa-ban"></i>
                                 </a>
                             <?php else: ?>
-                                <a href="../../controllers/AdminUsuarioController.php?accion=toggleEstado&id=<?= $ruben['id_usuario'] ?>&estado=0" class="px-3 py-1 rounded border text-green-600 border-green-300 hover:bg-green-50" title="Activar" onclick="return confirm('¿Seguro que desea activar este usuario?');">
+                                <a href="../../controllers/AdminUsuarioController.php?accion=toggleEstado&id=<?= $ruben['id_usuario'] ?>&estado=0" class="px-3 py-1 rounded border text-green-600 border-green-300 hover:bg-green-50" title="Activar" onclick="confirmarAccion(event, this.href, '¿Activar usuario?', '¿Seguro que desea activar este usuario?', 'info')">
                                     <i class="fas fa-check"></i>
                                 </a>
                             <?php endif; ?>
-                            <a href="../../controllers/AdminUsuarioController.php?accion=eliminar&id=<?= $ruben['id_usuario'] ?>" class="px-3 py-1 rounded border text-red-600 border-red-300 hover:bg-red-50" title="Eliminar" onclick="return confirm('¿Seguro que desea eliminar permanentemente este usuario?');">
+                            <a href="../../controllers/AdminUsuarioController.php?accion=eliminar&id=<?= $ruben['id_usuario'] ?>" class="px-3 py-1 rounded border text-red-600 border-red-300 hover:bg-red-50" title="Eliminar" onclick="confirmarAccion(event, this.href, '¿Eliminar permanentemente?', 'Esta acción no se puede deshacer. ¿Seguro que desea eliminar a este usuario?', 'error')">
                                 <i class="fas fa-trash"></i>
                             </a>
                         </td>
@@ -242,6 +242,62 @@ require_once __DIR__ . '/../layouts/sidebar.php';
         document.getElementById('edit_email').value = usuario.email;
         document.getElementById('edit_rol').value = usuario.rol;
         openModal('modalEditar');
+    }
+</script>
+
+<!-- DataTables CSS & JS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+<style>
+    /* Ajustes básicos para que DataTables se vea bien con Tailwind */
+    .dataTables_wrapper .dataTables_length select {
+        padding: 0.25rem 2rem 0.25rem 0.5rem;
+        border-radius: 0.375rem;
+        border: 1px solid #cbd5e1;
+    }
+    .dataTables_wrapper .dataTables_filter input {
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.375rem;
+        border: 1px solid #cbd5e1;
+        margin-left: 0.5rem;
+    }
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+        background: #2563eb !important;
+        color: white !important;
+        border: 1px solid #2563eb !important;
+        border-radius: 0.375rem;
+    }
+</style>
+<script>
+    $(document).ready(function() {
+        $('#usuariosTable').DataTable({
+            language: {
+                url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json',
+            },
+            pageLength: 10,
+            responsive: true,
+            // Quitamos el ordenamiento inicial para que mantenga el del backend o le ponemos al primer column
+            order: []
+        });
+    });
+
+    function confirmarAccion(event, url, titulo, texto, icono = 'warning') {
+        event.preventDefault();
+        Swal.fire({
+            title: titulo,
+            text: texto,
+            icon: icono,
+            showCancelButton: true,
+            confirmButtonColor: '#2563eb',
+            cancelButtonColor: '#dc2626',
+            confirmButtonText: 'Sí, continuar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = url;
+            }
+        });
     }
 </script>
 
