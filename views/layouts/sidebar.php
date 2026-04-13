@@ -3,7 +3,7 @@ $rol = $usuario['rol'];
 $nombreCompleto = $usuario['nombres'] . ' ' . $usuario['apellidos'];
 ?>
 
-<aside class="w-64 bg-gradient-to-b from-slate-900 to-blue-900 text-white shadow-2xl">
+<aside class="w-64 bg-slate-900 text-white shadow-2xl">
     <div class="h-24 flex items-center justify-center border-b border-white/10 px-4">
         <div class="text-center">
             <div class="text-lg font-bold leading-tight">Sistema de</div>
