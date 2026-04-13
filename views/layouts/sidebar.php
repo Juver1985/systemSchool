@@ -3,70 +3,70 @@ $rol = $usuario['rol'];
 $nombreCompleto = $usuario['nombres'] . ' ' . $usuario['apellidos'];
 ?>
 
-<aside class="w-64 bg-slate-900 text-white shadow-2xl">
-    <div class="h-24 flex items-center justify-center border-b border-white/10 px-4">
-        <div class="text-center">
+<aside class="w-64 bg-white shadow-xl border-r border-gray-200">
+    <div class="h-24 flex items-center justify-center border-b border-gray-100 px-4">
+        <div class="text-center text-blue-800">
             <div class="text-lg font-bold leading-tight">Sistema de</div>
             <div class="text-2xl font-extrabold tracking-wide">CALIFICACIONES</div>
         </div>
     </div>
 
     <nav class="mt-4 px-3 space-y-2">
-        <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg bg-blue-700/60 hover:bg-blue-700 transition">
+        <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg text-blue-700 bg-blue-50 font-semibold hover:bg-blue-100 transition">
             <i class="fas fa-gauge-high"></i>
             <span>Dashboard</span>
         </a>
 
         <?php if ($rol === 'administrador'): ?>
-            <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 transition">
+            <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg text-blue-700 hover:bg-blue-50 transition">
                 <i class="fas fa-users"></i>
                 <span>Usuarios</span>
             </a>
-            <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 transition">
+            <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg text-blue-700 hover:bg-blue-50 transition">
                 <i class="fas fa-school"></i>
                 <span>Cursos</span>
             </a>
-            <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 transition">
+            <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg text-blue-700 hover:bg-blue-50 transition">
                 <i class="fas fa-book"></i>
                 <span>Materias</span>
             </a>
-            <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 transition">
+            <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg text-blue-700 hover:bg-blue-50 transition">
                 <i class="fas fa-file-signature"></i>
                 <span>Evaluaciones</span>
             </a>
-            <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 transition">
+            <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg text-blue-700 hover:bg-blue-50 transition">
                 <i class="fas fa-chart-pie"></i>
                 <span>Reportes</span>
             </a>
         <?php endif; ?>
 
         <?php if ($rol === 'docente'): ?>
-            <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 transition">
+            <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg text-blue-700 hover:bg-blue-50 transition">
                 <i class="fas fa-file-signature"></i>
                 <span>Evaluaciones</span>
             </a>
-            <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 transition">
+            <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg text-blue-700 hover:bg-blue-50 transition">
                 <i class="fas fa-pen"></i>
                 <span>Notas</span>
             </a>
-            <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 transition">
+            <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg text-blue-700 hover:bg-blue-50 transition">
                 <i class="fas fa-chart-line"></i>
                 <span>Reportes</span>
             </a>
         <?php endif; ?>
 
         <?php if ($rol === 'estudiante' || $rol === 'acudiente'): ?>
-            <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 transition">
+            <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg text-blue-700 hover:bg-blue-50 transition">
                 <i class="fas fa-file-lines"></i>
                 <span>Boletín</span>
             </a>
-            <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 transition">
+            <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg text-blue-700 hover:bg-blue-50 transition">
                 <i class="fas fa-chart-column"></i>
                 <span>Desempeño</span>
             </a>
         <?php endif; ?>
 
-        <a href="../../controllers/AuthController.php?accion=logout" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-red-500/20 transition text-red-200">
+        <a href="../../controllers/AuthController.php?accion=logout" class="flex items-center gap-3 px-4 py-3 rounded-lg text-red-600 hover:bg-red-50 transition">
             <i class="fas fa-right-from-bracket"></i>
             <span>Cerrar Sesión</span>
         </a>
