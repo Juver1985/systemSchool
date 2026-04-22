@@ -83,7 +83,11 @@ class AdminUsuarioController {
         $datos = [
             'nombres' => trim($_POST['nombres'] ?? ''),
             'apellidos' => trim($_POST['apellidos'] ?? ''),
-            'rol' => trim($_POST['rol'] ?? '')
+            'rol' => trim($_POST['rol'] ?? ''),
+            'codigo_estudiantil' => $_POST['codigo_estudiantil'] ?? '',
+            'fecha_nacimiento' => $_POST['fecha_nacimiento'] ?? null,
+            'grado_actual' => $_POST['grado_actual'] ?? null,
+            'telefono' => $_POST['telefono'] ?? ''
         ];
 
         if (!empty($_POST['password'])) {
@@ -143,6 +147,32 @@ class AdminUsuarioController {
         exit;
     }
 
+    public function vincularAcudiente() {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $id_usuario_acu = $_POST['id_usuario_acudiente'];
+            $id_estudiante = $_POST['id_estudiante'];
+            $parentesco = $_POST['parentesco'];
+
+            $stmtAcu = $this->db->prepare("SELECT id_acudiente FROM acudientes WHERE id_usuario = :id");
+            $stmtAcu->execute([':id' => $id_usuario_acu]);
+            $acu = $stmtAcu->fetch(PDO::FETCH_ASSOC);
+
+            if ($acu) {
+                $id_acudiente = $acu['id_acudiente'];
+                $stmtLink = $this->db->prepare("INSERT INTO acudiente_estudiante (id_acudiente, id_estudiante, parentesco) VALUES (:id_a, :id_e, :p)");
+                if ($stmtLink->execute([':id_a' => $id_acudiente, ':id_e' => $id_estudiante, ':p' => $parentesco])) {
+                    $this->setAlert('success', 'Éxito', 'Vínculo creado correctamente');
+                } else {
+                    $this->setAlert('error', 'Error', 'Error al crear el vínculo');
+                }
+            } else {
+                $this->setAlert('error', 'Error', 'No se encontró el registro de acudiente');
+            }
+            header("Location: ../views/dashboard/admin.php");
+            exit;
+        }
+    }
+
     private function setAlert($icon, $title, $text) {
         $_SESSION['alert'] = [
             'icon' => $icon,
@@ -167,6 +197,9 @@ switch ($accion) {
         break;
     case 'eliminar':
         $controller->eliminar();
+        break;
+    case 'vincular_acudiente':
+        $controller->vincularAcudiente();
         break;
     default:
         header("Location: ../views/dashboard/admin.php");

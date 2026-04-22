@@ -67,6 +67,11 @@ require_once __DIR__ . '/../layouts/sidebar.php';
                             <?php endif; ?>
                         </td>
                         <td class="p-4 text-center space-x-2">
+                            <?php if ($ruben['rol'] === 'acudiente'): ?>
+                                <button type="button" onclick="openVincularModal(<?= $ruben['id_usuario'] ?>, '<?= htmlspecialchars($ruben['nombres'] . ' ' . $ruben['apellidos']) ?>')" class="px-3 py-1 rounded border text-indigo-600 border-indigo-300 hover:bg-indigo-50" title="Vincular Estudiantes">
+                                    <i class="fas fa-link"></i>
+                                </button>
+                            <?php endif; ?>
                             <button type="button" onclick="openEditModal(<?= htmlspecialchars(json_encode($ruben)) ?>)" class="px-3 py-1 rounded border text-blue-600 border-blue-300 hover:bg-blue-50" title="Editar">
                                 <i class="fas fa-pen"></i>
                             </button>
@@ -164,13 +169,39 @@ require_once __DIR__ . '/../layouts/sidebar.php';
             </div>
             <div>
                 <label class="block text-sm font-medium text-slate-700 mb-1">Rol *</label>
-                <select name="rol" required class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-blue-600 outline-none bg-white">
+                <select name="rol" id="rolSelect" required onchange="toggleExtraFields(this.value)" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-blue-600 outline-none bg-white">
                     <option value="">Seleccione un rol...</option>
                     <option value="administrador">Administrador</option>
                     <option value="docente">Docente</option>
                     <option value="estudiante">Estudiante</option>
                     <option value="acudiente">Acudiente</option>
                 </select>
+            </div>
+
+            <!-- Campos extra para Estudiantes -->
+            <div id="estudianteFields" class="hidden space-y-4 pt-4 border-t border-slate-100">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Código Estudiantil *</label>
+                        <input type="text" name="codigo_estudiantil" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-600 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Grado Actual</label>
+                        <input type="number" name="grado_actual" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-600 outline-none">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Fecha de Nacimiento</label>
+                    <input type="date" name="fecha_nacimiento" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-600 outline-none">
+                </div>
+            </div>
+
+            <!-- Campos extra para Acudientes -->
+            <div id="acudienteFields" class="hidden pt-4 border-t border-slate-100">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Teléfono / Celular *</label>
+                    <input type="text" name="telefono" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-600 outline-none">
+                </div>
             </div>
             <div class="flex justify-end gap-3 pt-4 border-t border-slate-200 mt-6">
                 <button type="button" onclick="closeModal('modalCrear')" class="px-5 py-2 text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors">Cancelar</button>
@@ -180,8 +211,59 @@ require_once __DIR__ . '/../layouts/sidebar.php';
     </div>
 </div>
 
-<!-- Modal Editar Usuario -->
-<div id="modalEditar" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+<!-- Modal Vincular Acudiente-Estudiante -->
+<div id="modalVincular" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden">
+        <div class="flex justify-between items-center p-6 border-b border-slate-200">
+            <h3 class="text-xl font-bold text-slate-800">Vincular Estudiante</h3>
+            <button onclick="closeModal('modalVincular')" class="text-slate-400 hover:text-slate-600 transition-colors">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+        <form action="../../controllers/AdminUsuarioController.php?accion=vincular_acudiente" method="POST" class="p-6 space-y-4">
+            <input type="hidden" name="id_usuario_acudiente" id="vincular_id_usuario">
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Acudiente</label>
+                <input type="text" id="vincular_nombre_acudiente" readonly class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-slate-600 outline-none">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Seleccionar Estudiante</label>
+                <select name="id_estudiante" required class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-600 outline-none bg-white">
+                    <option value="">Seleccione un estudiante...</option>
+                    <?php 
+                    $db_v = (new Database())->conectar();
+                    $stmt_v = $db_v->prepare("SELECT e.id_estudiante, u.nombres, u.apellidos FROM estudiantes e JOIN usuarios u ON e.id_usuario = u.id_usuario ORDER BY u.apellidos");
+                    $stmt_v->execute();
+                    $estudiantes_v = $stmt_v->fetchAll(PDO::FETCH_ASSOC);
+                    foreach($estudiantes_v as $ev): ?>
+                        <option value="<?= $ev['id_estudiante'] ?>"><?= htmlspecialchars($ev['apellidos'] . ' ' . $ev['nombres']) ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Parentesco</label>
+                <select name="parentesco" required class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-600 outline-none bg-white">
+                    <option value="Padre">Padre</option>
+                    <option value="Madre">Madre</option>
+                    <option value="Tutor">Tutor</option>
+                    <option value="Abuelo/a">Abuelo/a</option>
+                    <option value="Otro">Otro</option>
+                </select>
+            </div>
+            <div class="flex justify-end gap-3 pt-4 border-t border-slate-200 mt-6">
+                <button type="button" onclick="closeModal('modalVincular')" class="px-5 py-2 text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors">Cancelar</button>
+                <button type="submit" class="px-5 py-2 text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow transition-colors font-bold">Vincular</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openVincularModal(id, nombre) {
+        document.getElementById('vincular_id_usuario').value = id;
+        document.getElementById('vincular_nombre_acudiente').value = nombre;
+        openModal('modalVincular');
+    }
     <div class="bg-white rounded-2xl shadow-xl w-full max-w-2xl overflow-hidden">
         <div class="flex justify-between items-center p-6 border-b border-slate-200">
             <h3 class="text-2xl font-bold text-slate-800">Editar Usuario</h3>
@@ -211,12 +293,37 @@ require_once __DIR__ . '/../layouts/sidebar.php';
             </div>
             <div>
                 <label class="block text-sm font-medium text-slate-700 mb-1">Rol *</label>
-                <select name="rol" id="edit_rol" required class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-blue-600 outline-none bg-white">
+                <select name="rol" id="edit_rol" required onchange="toggleExtraFieldsEdit(this.value)" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-blue-600 outline-none bg-white">
                     <option value="administrador">Administrador</option>
                     <option value="docente">Docente</option>
                     <option value="estudiante">Estudiante</option>
                     <option value="acudiente">Acudiente</option>
                 </select>
+            </div>
+
+            <!-- Campos extra para Edición -->
+            <div id="estudianteFieldsEdit" class="hidden space-y-4 pt-4 border-t border-slate-100">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Código Estudiantil *</label>
+                        <input type="text" name="codigo_estudiantil" id="edit_codigo_estudiantil" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-600 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Grado Actual</label>
+                        <input type="number" name="grado_actual" id="edit_grado_actual" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-600 outline-none">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Fecha de Nacimiento</label>
+                    <input type="date" name="fecha_nacimiento" id="edit_fecha_nacimiento" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-600 outline-none">
+                </div>
+            </div>
+
+            <div id="acudienteFieldsEdit" class="hidden pt-4 border-t border-slate-100">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Teléfono / Celular *</label>
+                    <input type="text" name="telefono" id="edit_telefono" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-600 outline-none">
+                </div>
             </div>
             <div class="flex justify-end gap-3 pt-4 border-t border-slate-200 mt-6">
                 <button type="button" onclick="closeModal('modalEditar')" class="px-5 py-2 text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors">Cancelar</button>
@@ -235,12 +342,41 @@ require_once __DIR__ . '/../layouts/sidebar.php';
         document.getElementById(id).classList.add('hidden');
     }
 
+    function toggleExtraFields(rol, mode = '') {
+        const estFields = document.getElementById('estudianteFields' + mode);
+        const acuFields = document.getElementById('acudienteFields' + mode);
+        
+        estFields.classList.add('hidden');
+        acuFields.classList.add('hidden');
+        
+        if (rol === 'estudiante') {
+            estFields.classList.remove('hidden');
+        } else if (rol === 'acudiente') {
+            acuFields.classList.remove('hidden');
+        }
+    }
+
+    function toggleExtraFieldsEdit(rol) {
+        toggleExtraFields(rol, 'Edit');
+    }
+
     function openEditModal(usuario) {
         document.getElementById('edit_id_usuario').value = usuario.id_usuario;
         document.getElementById('edit_nombres').value = usuario.nombres;
         document.getElementById('edit_apellidos').value = usuario.apellidos;
         document.getElementById('edit_email').value = usuario.email;
         document.getElementById('edit_rol').value = usuario.rol;
+        
+        // Cargar campos extra
+        if (usuario.rol === 'estudiante') {
+            document.getElementById('edit_codigo_estudiantil').value = usuario.codigo_estudiantil || '';
+            document.getElementById('edit_grado_actual').value = usuario.grado_actual || '';
+            document.getElementById('edit_fecha_nacimiento').value = usuario.fecha_nacimiento || '';
+        } else if (usuario.rol === 'acudiente') {
+            document.getElementById('edit_telefono').value = usuario.telefono || '';
+        }
+        
+        toggleExtraFieldsEdit(usuario.rol);
         openModal('modalEditar');
     }
 </script>
@@ -269,36 +405,6 @@ require_once __DIR__ . '/../layouts/sidebar.php';
         border-radius: 0.375rem;
     }
 </style>
-<script>
-    $(document).ready(function() {
-        $('#usuariosTable').DataTable({
-            language: {
-                url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json',
-            },
-            pageLength: 10,
-            responsive: true,
-            // Quitamos el ordenamiento inicial para que mantenga el del backend o le ponemos al primer column
-            order: []
-        });
-    });
 
-    function confirmarAccion(event, url, titulo, texto, icono = 'warning') {
-        event.preventDefault();
-        Swal.fire({
-            title: titulo,
-            text: texto,
-            icon: icono,
-            showCancelButton: true,
-            confirmButtonColor: '#2563eb',
-            cancelButtonColor: '#dc2626',
-            confirmButtonText: 'Sí, continuar',
-            cancelButtonText: 'Cancelar'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                window.location.href = url;
-            }
-        });
-    }
-</script>
 
 <?php require_once __DIR__ . '/../layouts/footer.php'; ?>

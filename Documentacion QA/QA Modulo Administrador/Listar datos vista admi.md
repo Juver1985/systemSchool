@@ -3,5 +3,5 @@ Filtro datos en la tabla atravez de un foreach conectado me diante una variable 
 
 DataTables:
 
-busque o filtro esta funcionamiento mediante JavaScriop 
-y la paginacion me la muestra por bloque de 10 atraves de JavaScript 
+busqueda o filtro esta funcionamiento mediante JavaScriop 
+y la paginacion me la muestra por bloque de 10 atraves de JavaScript  conectado por id del datatable: 'usuariosTable'

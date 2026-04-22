@@ -34,6 +34,7 @@ CREATE TABLE `cursos` (
   `id_curso` bigint PRIMARY KEY AUTO_INCREMENT,
   `nombre` varchar(50) NOT NULL COMMENT 'Ej: 9A',
   `grado` int NOT NULL,
+  `jornada` varchar(20) NOT NULL DEFAULT 'Mañana',
   `anio` int NOT NULL COMMENT 'Ej: 2026'
 );
 

@@ -73,11 +73,11 @@ class AuthController {
 
         switch ($usuario['rol']) {
             case 'administrador':
-                header("Location: ../views/dashboard/admin.php");
+                header("Location: ../views/dashboard/admin_dashboard.php");
                 exit;
 
             case 'docente':
-                header("Location: ../views/dashboard/docente.php");
+                header("Location: ../views/dashboard/docente_dashboard.php");
                 exit;
 
             case 'estudiante':
