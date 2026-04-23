@@ -258,12 +258,10 @@ require_once __DIR__ . '/../layouts/sidebar.php';
     </div>
 </div>
 
-<script>
-    function openVincularModal(id, nombre) {
-        document.getElementById('vincular_id_usuario').value = id;
-        document.getElementById('vincular_nombre_acudiente').value = nombre;
-        openModal('modalVincular');
-    }
+</script>
+
+<!-- Modal Editar Usuario -->
+<div id="modalEditar" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
     <div class="bg-white rounded-2xl shadow-xl w-full max-w-2xl overflow-hidden">
         <div class="flex justify-between items-center p-6 border-b border-slate-200">
             <h3 class="text-2xl font-bold text-slate-800">Editar Usuario</h3>
@@ -346,12 +344,12 @@ require_once __DIR__ . '/../layouts/sidebar.php';
         const estFields = document.getElementById('estudianteFields' + mode);
         const acuFields = document.getElementById('acudienteFields' + mode);
         
-        estFields.classList.add('hidden');
-        acuFields.classList.add('hidden');
+        if (estFields) estFields.classList.add('hidden');
+        if (acuFields) acuFields.classList.add('hidden');
         
-        if (rol === 'estudiante') {
+        if (rol === 'estudiante' && estFields) {
             estFields.classList.remove('hidden');
-        } else if (rol === 'acudiente') {
+        } else if (rol === 'acudiente' && acuFields) {
             acuFields.classList.remove('hidden');
         }
     }
@@ -381,10 +379,33 @@ require_once __DIR__ . '/../layouts/sidebar.php';
     }
 </script>
 
+
 <!-- DataTables CSS & JS -->
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#usuariosTable').DataTable({
+            language: {
+                url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json'
+            },
+            responsive: true,
+            dom: '<"flex flex-col md:flex-row justify-between gap-4 mb-4"lf>rt<"flex flex-col md:flex-row justify-between items-center gap-4 mt-4"ip>',
+            pageLength: 10,
+            columnDefs: [
+                { orderable: false, targets: 4 }
+            ]
+        });
+    });
+
+    function openVincularModal(id, nombre) {
+        document.getElementById('vincular_id_usuario').value = id;
+        document.getElementById('vincular_nombre_acudiente').value = nombre;
+        openModal('modalVincular');
+    }
+</script>
+
 <style>
     /* Ajustes básicos para que DataTables se vea bien con Tailwind */
     .dataTables_wrapper .dataTables_length select {
